@@ -1,0 +1,13 @@
+services:
+  ski-fit:
+    build:
+      context: ..
+      dockerfile: nas/Dockerfile
+    container_name: ski-fit
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    environment:
+      FAMILY_CODE: familie-ski-2027
+    volumes:
+      - ./data:/data
