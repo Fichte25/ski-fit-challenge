@@ -35,3 +35,7 @@ Der Container liefert die App und die Sync-Schnittstelle aus â€“ Supabase wird d
 3. Neu deployen. Ohne diese Werte speichert jedes Handy nur lokal.
 
 Hinweis: Die Tabelle ist ohne Login anonym les-/schreibbar (nur Einheiten-EintrÃ¤ge). FÃ¼r den Familiengebrauch ausreichend.
+
+## Übungsbilder
+Alle Übungen (inkl. Aufwärmen/Dehnen) werden als animierte Strichmännchen (SVG, offline) in der Vorschau und im Workout-Player angezeigt – siehe src/figures.ts.
+

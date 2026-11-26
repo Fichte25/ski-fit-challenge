@@ -33,6 +33,7 @@ export interface Segment {
   name: string;
   cue: string;
   icon: string;
+  fig?: string;
   ex?: ResolvedExercise;
   next?: string;
   round?: number;
@@ -149,20 +150,20 @@ const SESSION_EX: Record<SessionDef['type'], string[]> = {
   D: ['backlunge', 'bridge', 'twist', 'jacks'],
 };
 
-const WARMUP: { name: string; cue: string; icon: string }[] = [
-  { name: 'Armkreisen & Schultern', cue: 'Große Kreise vorwärts und rückwärts.', icon: '🔄' },
-  { name: 'Hüftkreisen', cue: 'Große, langsame Kreise, Richtung nach der halben Zeit wechseln.', icon: '🌀' },
-  { name: 'Hohe Knie marschieren', cue: 'Knie hoch, Arme mitschwingen, Puls hochfahren.', icon: '🚶' },
-  { name: 'Lockere Kniebeugen', cue: 'Locker und mit kleinem Tempo, Rücken gerade.', icon: '🏋️' },
-  { name: 'Seitliche Ausfallschritte (locker)', cue: 'Locker von links nach rechts verlagern.', icon: '↔️' },
-  { name: 'Rumpfdrehungen', cue: 'Füße fest, Oberkörper im Wechsel drehen.', icon: '🔁' },
+const WARMUP: { name: string; cue: string; icon: string; fig: string }[] = [
+  { name: 'Armkreisen & Schultern', cue: 'Große Kreise vorwärts und rückwärts.', icon: '🔄', fig: 'w-arms' },
+  { name: 'Hüftkreisen', cue: 'Große, langsame Kreise, Richtung nach der halben Zeit wechseln.', icon: '🌀', fig: 'w-hips' },
+  { name: 'Hohe Knie marschieren', cue: 'Knie hoch, Arme mitschwingen, Puls hochfahren.', icon: '🚶', fig: 'w-knees' },
+  { name: 'Lockere Kniebeugen', cue: 'Locker und mit kleinem Tempo, Rücken gerade.', icon: '🏋️', fig: 'w-squat' },
+  { name: 'Seitliche Ausfallschritte (locker)', cue: 'Locker von links nach rechts verlagern.', icon: '↔️', fig: 'w-lunge' },
+  { name: 'Rumpfdrehungen', cue: 'Füße fest, Oberkörper im Wechsel drehen.', icon: '🔁', fig: 'w-twist' },
 ];
 
-const COOLDOWN: { name: string; cue: string; icon: string }[] = [
-  { name: 'Oberschenkel dehnen', cue: 'Ferse zum Po, Knie zeigt nach unten. Nach der halben Zeit Seite wechseln.', icon: '🧎' },
-  { name: 'Hüftbeuger dehnen', cue: 'Ausfallschritt, Hüfte nach vorn schieben. Nach der halben Zeit Seite wechseln.', icon: '🧎' },
-  { name: 'Waden dehnen', cue: 'Ferse am Boden, Bein hinten gestreckt. Nach der halben Zeit Seite wechseln.', icon: '🦶' },
-  { name: 'Katzenbuckel & Kindhaltung', cue: 'Ruhig atmen, Rücken lang machen, Schultern lockern.', icon: '🐱' },
+const COOLDOWN: { name: string; cue: string; icon: string; fig: string }[] = [
+  { name: 'Oberschenkel dehnen', cue: 'Ferse zum Po, Knie zeigt nach unten. Nach der halben Zeit Seite wechseln.', icon: '🧎', fig: 'c-quad' },
+  { name: 'Hüftbeuger dehnen', cue: 'Ausfallschritt, Hüfte nach vorn schieben. Nach der halben Zeit Seite wechseln.', icon: '🧎', fig: 'c-hip' },
+  { name: 'Waden dehnen', cue: 'Ferse am Boden, Bein hinten gestreckt. Nach der halben Zeit Seite wechseln.', icon: '🦶', fig: 'c-calf' },
+  { name: 'Katzenbuckel & Kindhaltung', cue: 'Ruhig atmen, Rücken lang machen, Schultern lockern.', icon: '🐱', fig: 'c-cat' },
 ];
 
 function resolve(baseId: string, idx: number): ResolvedExercise {
@@ -203,18 +204,18 @@ export function buildWorkout(idx: number): Workout {
   const exercises = SESSION_EX[def.type].map((id) => resolve(id, idx));
   const segs: Segment[] = [];
   segs.push({ kind: 'ready', dur: 5, name: 'Mach dich bereit', cue: 'Platz schaffen, Handy in Sichtweite stellen.', icon: '📱', next: WARMUP[0].name });
-  WARMUP.forEach((w, i) => segs.push({ kind: 'warm', dur: 30, name: w.name, cue: w.cue, icon: w.icon, next: WARMUP[i + 1]?.name ?? exercises[0].name }));
+  WARMUP.forEach((w, i) => segs.push({ kind: 'warm', dur: 30, name: w.name, cue: w.cue, icon: w.icon, fig: w.fig, next: WARMUP[i + 1]?.name ?? exercises[0].name }));
   for (let r = 1; r <= rounds; r++) {
     exercises.forEach((ex, i) => {
-      segs.push({ kind: 'work', dur: work, name: ex.name, cue: ex.cue, icon: ex.icon, ex, round: r, rounds });
+      segs.push({ kind: 'work', dur: work, name: ex.name, cue: ex.cue, icon: ex.icon, fig: ex.variantId, ex, round: r, rounds });
       const last = r === rounds && i === exercises.length - 1;
       if (!last) {
         const nextEx = exercises[(i + 1) % exercises.length];
-        segs.push({ kind: 'rest', dur: rest, name: 'Pause', cue: 'Locker bewegen, durchatmen, Wasser trinken.', icon: '💧', next: nextEx.name, round: i === exercises.length - 1 ? r + 1 : r, rounds });
+        segs.push({ kind: 'rest', dur: rest, name: 'Pause', cue: 'Locker bewegen, durchatmen, Wasser trinken.', icon: '💧', fig: nextEx.variantId, next: nextEx.name, round: i === exercises.length - 1 ? r + 1 : r, rounds });
       }
     });
   }
-  COOLDOWN.forEach((c, i) => segs.push({ kind: 'cool', dur: 30, name: c.name, cue: c.cue, icon: c.icon, next: COOLDOWN[i + 1]?.name }));
+  COOLDOWN.forEach((c, i) => segs.push({ kind: 'cool', dur: 30, name: c.name, cue: c.cue, icon: c.icon, fig: c.fig, next: COOLDOWN[i + 1]?.name }));
   return {
     idx, title: SESSION_TITLES[def.type], type: def.type, week: def.week,
     segments: segs, exercises, work, rest, rounds,

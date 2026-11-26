@@ -3,6 +3,7 @@ import {
   PHASES, PROGRAM_START, SESSION_TITLES, TOTAL_SESSIONS, TRIP_END, TRIP_START, WEEKS,
   buildWorkout, weekSessions, type Segment, type Workout,
 } from './plan';
+import { figureSvg, hasFigure } from './figures';
 import {
   PEOPLE, addCompletion, currentWeek, daysBetween, doneIdx, lastSync, nextIdx, onChange,
   pointsFor, remoteEnabled, save, setRate, state, streakWeeks, sync, syncStatus,
@@ -141,7 +142,7 @@ function previewView() {
       <p class="muted">≈ ${Math.round(w.totalSec / 60)} Min: 3 Min Aufwärmen · ${w.rounds} Runden à ${w.exercises.length} Übungen (${w.work}s Belastung, ${w.rest}s Pause) · 2 Min Dehnen</p></section>
     ${w.exercises.map((ex) => {
       const t = ex.kind === 'reps' ? targetReps(p.id, ex.variantId, w.work) : null;
-      return `<section class="card ex"><span class="em">${ex.icon}</span><div><b>${ex.name}</b><p class="muted">${ex.cue}</p>
+      return `<section class="card ex"><div class="figbox">${figureSvg(ex.variantId)}</div><div><b>${ex.name}</b><p class="muted">${ex.cue}</p>
         <small class="goal">${ex.kind === 'hold' ? `Halten: ${w.work}s` : t ? `🎯 Ziel heute: ${t} Wdh. pro Runde` : 'Zähle mit – dein Wert wird die Basis für die nächste Einheit.'}</small></div></section>`;
     }).join('')}
     <button class="btn" data-act="start">Los geht's 🚀</button>
@@ -252,9 +253,9 @@ function renderPlayer() {
   const label = { ready: 'Bereit machen', warm: 'Aufwärmen', work: `Runde ${s.round}/${s.rounds}`, rest: 'Pause', cool: 'Dehnen' }[s.kind];
   app.innerHTML = `<main class="player ${s.kind}">
     <div class="phead"><span class="chip">${label}</span><span class="muted">Rest <b id="tot">${fmt(segs.slice(si + 1).reduce((a, x) => a + x.dur, 0) + remaining)}</b></span></div>
-    <div class="big-ico">${s.icon}</div>
+    ${s.fig && hasFigure(s.fig) ? `<div class="pfig">${figureSvg(s.fig)}</div>` : `<div class="big-ico">${s.icon}</div>`}
     <h1>${esc(s.name)}</h1>
-    <div class="timer" id="t">${remaining}</div>
+    <div class="timer${s.fig && hasFigure(s.fig) ? ' small' : ''}" id="t">${remaining}</div>
     <div class="bar big"><i id="f" style="width:${(1 - remaining / s.dur) * 100}%"></i></div>
     <p class="cue">${esc(s.cue)}</p>
     ${t ? `<p class="goal">🎯 Ziel: ${t} Wdh.</p>` : s.kind === 'work' && s.ex!.kind === 'reps' ? '<p class="goal">Zähle mit!</p>' : ''}

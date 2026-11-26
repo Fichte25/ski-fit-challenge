@@ -1,4 +1,4 @@
-const CACHE = 'skifit-v1';
+const CACHE = 'skifit-v2';
 
 self.addEventListener('install', (e) => {
   self.skipWaiting();

@@ -81,4 +81,9 @@ p { margin: 6px 0; line-height: 1.4; }
 .player .bar { width: 100%; }
 .player .bar i { background: #fff; transition: none; }
 .cue { font-size: 18px; max-width: 460px; }
-.ctl { width: 100%; margin-top: auto; padding-top: 12px; }
+.ctl { width: 100%; margin-top: auto; padding-top: 12px; display: flex; gap: 8px; }
+.ctl .btn { margin-top: 0; padding: 12px 4px; font-size: 14px; flex: 1; }
+.figbox { flex: none; width: 116px; padding: 4px; border-radius: 12px; background: rgba(0, 0, 0, .28); }
+.pfig { width: min(100%, 300px); margin: 6px auto 0; padding: 4px; border-radius: 16px; background: rgba(0, 0, 0, .25); }
+.fig { display: block; width: 100%; height: auto; }
+.timer.small { font-size: 84px; }
